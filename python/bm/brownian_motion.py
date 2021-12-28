@@ -1,2 +1,2 @@
 print('Random walking...')
-print('Random walking...')
+print('Hi')
