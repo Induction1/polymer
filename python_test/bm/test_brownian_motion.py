@@ -105,4 +105,5 @@ class MyTestCase(unittest.TestCase):
         sub3 = fig.add_subplot(2, 2, 4)
         sub3.hist(cross_section, bins=100)
         plt.gca().yaxis.set_major_formatter(FuncFormatter(fmt))
+        plt.suptitle("hi")
         plt.show()
