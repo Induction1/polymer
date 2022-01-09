@@ -80,7 +80,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_combine_plots(self):
         n = 1000
-        d = 100
+        d = 1000
         times, B = self.get_bm_data(dimensions=d, steps=n)
         cross_section = B[900, :]
         msd = np.sum(B * B / d, axis=1)
