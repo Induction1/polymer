@@ -50,18 +50,17 @@ class TestBMHarmonic(unittest.TestCase):
 
         dt = times[1] - times[0]
 
-        dB = np.sqrt(2 * dt) * np.random.normal(size=(steps - 1, dimensions))
-        B0 = np.zeros(shape=(steps, dimensions))
-        B = np.concatenate((B0, np.cumsum(dB, axis=0)), axis=0)
+        dB = np.sqrt(2 * dt) * np.random.normal(size=(steps, dimensions))
+        B = np.zeros(shape=(steps, dimensions))
 
         r_curr = np.zeros(dimensions)
         for i in range(1, steps):
-            B[i] = r_curr * (1.0 - dt) + dB[i-1]
+            B[i] = r_curr * (1.0 - dt) + dB[i]
             r_curr = B[i]
 
         B = B * B
-        tmp = 3 * np.sum(B, axis=1) / dimensions
-        print([b.shape for b in [dB, B0, B, tmp]])
+        msd_3d = 3 * np.sum(B, axis=1) / dimensions
+        print([b.shape for b in [dB, B, msd_3d]])
         plt.figure(figsize=(9, 6))
-        plt.plot(times, tmp)
+        plt.plot(times, msd_3d)
         plt.show()
