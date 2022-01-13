@@ -3,11 +3,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import rcParams
 from matplotlib.ticker import FuncFormatter
-from matplotlib.patches import Polygon
 
 
-class MyTestCase(unittest.TestCase):
-    def get_bm_data(self, dimensions=100, steps=100):
+class TestSimpleBM(unittest.TestCase):
+    """
+    Simple Brownian Motion tests
+    """
+    def get_bm_data(self, dimensions=200, steps=100):
         """
 
         :param dimensions: number of realizations of bm
@@ -22,8 +24,10 @@ class MyTestCase(unittest.TestCase):
         # Bt2 - Bt1 ~ Normal with mean 0 and variance t2-t1
 
         dB = np.sqrt(dt) * np.random.normal(size=(steps - 1, dimensions))
-        BO = np.zeros(shape=(1, dimensions))
-        B = np.concatenate((BO, np.cumsum(dB, axis=0)), axis=0)
+        B0 = np.zeros(shape=(1, dimensions))
+        print(dB.shape)
+        print(B0.shape)
+        B = np.concatenate((B0, np.cumsum(dB, axis=0)), axis=0)
         return times, B
 
     def test_bm(self):
@@ -32,6 +36,9 @@ class MyTestCase(unittest.TestCase):
         :return:
         """
         times, B = self.get_bm_data()
+
+        print(times.shape)
+        print(B.shape)
 
         return times, B
         # print(times.shape)
