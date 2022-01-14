@@ -8,7 +8,18 @@ class TestBMHarmonic(unittest.TestCase):
     """
     Brownian Motion in a harmonic potential
     """
+
     def test_harmonic(self):
+        times, simulated_msd_3d, msd_3d = TestBMHarmonic.simulate_bm_harmonic(seconds=12)
+
+        plt.figure(figsize=(9, 6))
+        plt.plot(times, msd_3d)
+        plt.plot(times, simulated_msd_3d)
+
+        plt.show()
+
+    @staticmethod
+    def simulate_bm_harmonic(dimensions=1000, seconds=12):
         """
         The below math is normalized by
         t_tilda = t / tao
@@ -30,37 +41,30 @@ class TestBMHarmonic(unittest.TestCase):
         r_tilda_(i+1) = r_tilda_i * ( 1 - delta_t_tilda) + sqrt(2 * delta_t_tilda) * b_i
         Where r_n is the displacement of the nth step, and b_i is
         a stochastic variable of standard normal distribution.
+
+        :param dimensions: The number of 1-d simulation to perform
+        :param seconds: The length of the simulation
+        :return: times, msd_3d, simulated_msd_3d
         """
 
-        T = 12
-        steps = 100 * T
+        T = 1
+        steps = 10 * 100 * T
         times = np.linspace(0, T, steps)
+        times = seconds * times
+        delta_t = times[1] - times[0]
+        delta_brownian_motion = np.sqrt(2 * delta_t) * np.random.normal(size=(steps, dimensions))
 
-        msd = 3 * (1 - np.exp(-2 * times))
-
-        plt.figure(figsize=(9, 6))
-        plt.plot(times, msd)
-        plt.show()
-
-    def test(self):
-        dimensions = 1000
-        T = 12
-        steps = 100 * T
-        times = np.linspace(0, T, steps)
-
-        dt = times[1] - times[0]
-
-        dB = np.sqrt(2 * dt) * np.random.normal(size=(steps, dimensions))
-        B = np.zeros(shape=(steps, dimensions))
+        r = np.zeros(shape=(steps, dimensions))
 
         r_curr = np.zeros(dimensions)
         for i in range(1, steps):
-            B[i] = r_curr * (1.0 - dt) + dB[i]
-            r_curr = B[i]
+            r[i] = r_curr * (1.0 - delta_t) + delta_brownian_motion[i]
+            r_curr = r[i]
 
-        B = B * B
-        msd_3d = 3 * np.sum(B, axis=1) / dimensions
-        print([b.shape for b in [dB, B, msd_3d]])
-        plt.figure(figsize=(9, 6))
-        plt.plot(times, msd_3d)
-        plt.show()
+        r_square = r * r
+        simulated_msd_3d = 3 * (np.sum(r_square, axis=1) / dimensions)
+
+        # The analytical msd_3d
+        msd_3d = 3 * (1 - np.exp(-2 * times))
+
+        return times, msd_3d, simulated_msd_3d
