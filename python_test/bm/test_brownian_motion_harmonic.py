@@ -16,6 +16,32 @@ class TestBMHarmonic(unittest.TestCase):
         plt.plot(times, msd_3d)
         plt.plot(times, simulated_msd_3d)
 
+
+        plt.show()
+
+
+
+    def test_harmonic_with_inset(self):
+        """
+        Shows the simulation in 2 time scales
+        :return:
+        """
+        full_length = 12
+        times, simulated_msd_3d, msd_3d = TestBMHarmonic.simulate_bm_harmonic(seconds=full_length)
+
+        fig, ax = plt.subplots(figsize=[9, 6])
+
+        ax.plot(times, msd_3d)
+        ax.plot(times, simulated_msd_3d)
+
+        # These are in unitless percentages of the figure size. (0,0 is bottom left)
+        left, bottom, width, height = [0.4, 0.2, 0.4, 0.4]
+        ax2 = fig.add_axes([left, bottom, width, height])
+
+        times, simulated_msd_3d, msd_3d = TestBMHarmonic.simulate_bm_harmonic(seconds=0.25)
+        ax2.plot(times, msd_3d)
+        ax2.plot(times, simulated_msd_3d)
+
         plt.show()
 
     @staticmethod
@@ -48,7 +74,7 @@ class TestBMHarmonic(unittest.TestCase):
         """
 
         T = 1
-        steps = 10 * 100 * T
+        steps = 1000 * T
         times = np.linspace(0, T, steps)
         times = seconds * times
         delta_t = times[1] - times[0]
