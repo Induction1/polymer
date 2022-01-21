@@ -3,12 +3,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import rcParams
 from matplotlib.ticker import FuncFormatter
+from bm.brownian_motion import generate_random_3d_unit_vector, generate_random_3d_unit_vectors
 
 
 class TestSimpleBM(unittest.TestCase):
     """
     Simple Brownian Motion tests
     """
+
     def get_bm_data(self, dimensions=200, steps=100):
         """
 
@@ -114,3 +116,13 @@ class TestSimpleBM(unittest.TestCase):
         plt.gca().yaxis.set_major_formatter(FuncFormatter(fmt))
         plt.suptitle("Simple Brownian Motion Simulation")
         plt.show()
+
+    def test_random_3d_vector(self):
+        for i in range(0, 10):
+            x, y, z = generate_random_3d_unit_vector()
+            print(x, y, z)
+            print(x * x + y * y + z * z)
+
+    def test_random_3d_vector_array(self):
+        vectors_3d = generate_random_3d_unit_vectors(4)
+        print(vectors_3d.reshape(3, -1))
