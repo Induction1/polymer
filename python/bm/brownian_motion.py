@@ -4,6 +4,10 @@ import numpy as np
 
 
 def generate_random_3d_unit_vector():
+    """
+    
+    :return: A single random 3D unit vector.
+    """
     phi = 2 * pi * random.uniform(0, 1)
     theta = 2 * pi * random.uniform(0, 1)
     x = sin(theta) * cos(phi)
@@ -13,6 +17,10 @@ def generate_random_3d_unit_vector():
 
 
 def generate_random_3d_unit_vectors(n):
+    """
+    :param n: The number of unit random 3D vectors to produce.
+    :return: n randomly and uniformly distributed 3D unit vectors.
+    """
     angles = np.random.uniform(0.0, 1.0, 2 * n).reshape((2, -1))
     x = np.cos(angles[1] * 2 * np.pi) * np.sin(angles[0] * 2 * np.pi)
     y = np.sin(angles[1] * 2 * np.pi) * np.sin(angles[0] * 2 * np.pi)
