@@ -37,7 +37,10 @@ def calculate_f(v):
     :param v:
     :return:
     """
-    return v - v / np.linalg.norm(v)
+    try:
+        return v - v / np.sqrt(np.sum(v * v, axis=0))
+    except:
+        return np.zeros(v.shape)
 
 
 def from_bond_vectors_to_padded_bead_vectors(bond_vectors):
@@ -65,3 +68,17 @@ def from_bond_vectors_to_padded_bead_vectors(bond_vectors):
 
     all_beads = np.concatenate((bead_neg_1, bead_0, bead_1_to_n_plus_1, bead_n_plus_2), axis=1)
     return all_beads
+
+
+def generate_3d_random_bm_vectors(n):
+    """
+    Generate 3D vectors whose lengths are normally distributed and directions are randomly pointed
+    in spherical coordinates.
+    :param n: The number of 3D vectors
+    :return:
+    """
+    random_vs = generate_random_3d_unit_vectors(n)
+    random_factor = np.random.normal(0, 1, n)
+    # Apply the random factors
+    random_bm_vs = random_factor * random_vs
+    return random_bm_vs
