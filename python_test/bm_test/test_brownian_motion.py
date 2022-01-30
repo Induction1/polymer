@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import rcParams
 from matplotlib.ticker import FuncFormatter
-from bm_test.brownian_motion import generate_random_3d_unit_vector, generate_random_3d_unit_vectors
+from bm.brownian_motion import generate_random_3d_unit_vector, generate_random_3d_unit_vectors
 
 
 class TestSimpleBM(unittest.TestCase):
