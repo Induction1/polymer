@@ -17,17 +17,33 @@ def generate_random_3d_unit_vector():
     return x, y, z
 
 
-def generate_random_3d_unit_vectors(n):
+def generate_random_3d_unit_vectors(num_of_vectors):
     """
-    :param n: The number of unit random 3D vectors to produce.
-    :return: n randomly and uniformly distributed 3D unit vectors.
+    :param num_of_vectors: The number of unit random 3D vectors to produce.
+    :return: num_of_vectors randomly and uniformly distributed 3D unit vectors.
     """
-    angles = np.random.uniform(0.0, 1.0, 2 * n).reshape((2, -1))
+    angles = np.random.uniform(0.0, 1.0, 2 * num_of_vectors).reshape((2, -1))
     x = np.cos(angles[1] * 2 * np.pi) * np.sin(angles[0] * 2 * np.pi)
     y = np.sin(angles[1] * 2 * np.pi) * np.sin(angles[0] * 2 * np.pi)
     z = np.cos(angles[0] * 2 * np.pi)
     vectors_3d = np.concatenate((x, y, z), axis=0)
     return vectors_3d.reshape(3, -1)
+
+
+def generate_random_3d_unit_vectors_of_n_chains(num_of_chains, num_of_vectors):
+    """
+
+    :param num_of_chains:
+    :param num_of_vectors: The number of unit random 3D vectors to produce.
+    :return:
+    """
+
+    angles = np.random.uniform(0.0, 1.0, 2 * num_of_chains * num_of_vectors).reshape((2, -1))
+    x = np.cos(angles[1] * 2 * np.pi) * np.sin(angles[0] * 2 * np.pi)
+    y = np.sin(angles[1] * 2 * np.pi) * np.sin(angles[0] * 2 * np.pi)
+    z = np.cos(angles[0] * 2 * np.pi)
+    vectors_3d = np.concatenate((x, y, z), axis=0)
+    return vectors_3d.reshape(num_of_chains, 3, -1)
 
 
 def calculate_f(v):
@@ -96,20 +112,6 @@ def from_bond_vectors_of_n_chains_to_padded_bead_vectors(bond_vectors_of_n_chain
 
     all_chains = np.concatenate((bead_neg_1, bead_0, bead_1_to_n_plus_1, bead_n_plus_2), axis=2)
     return all_chains
-
-
-def generate_3d_random_bm_vectors(n):
-    """
-    Generate 3D vectors whose lengths are normally distributed and directions are randomly pointed
-    in spherical coordinates.
-    :param n: The number of 3D vectors
-    :return:
-    """
-    random_vs = generate_random_3d_unit_vectors(n)
-    random_factor = np.random.normal(0, 1, n)
-    # Apply the random factors
-    random_bm_vs = random_factor * random_vs
-    return random_bm_vs
 
 
 def generate_3d_random_bm_vectors(n):
