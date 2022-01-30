@@ -38,7 +38,8 @@ def calculate_f(v):
     :return:
     """
     try:
-        return v - v / np.sqrt(np.sum(v * v, axis=0))
+        magnitude = np.sqrt(np.sum(v * v, axis=0))
+        return v - v / magnitude
     except:
         return np.zeros(v.shape)
 
@@ -123,3 +124,7 @@ def generate_3d_random_bm_vectors(n):
     # Apply the random factors
     random_bm_vs = random_factor * random_vs
     return random_bm_vs
+
+
+def generate_simple_3d_unit_vectors(n):
+    return np.concatenate((np.ones((1, n)), np.zeros((1, 2 * n))), axis=1).reshape((3, -1))

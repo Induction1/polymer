@@ -48,17 +48,32 @@ class ThreeDimTestCase(unittest.TestCase):
         )
 
     def test_force_extension_of_dna(self):
-        steps = 25000
-        delta_t = 0.05
-        n = 30
-        k = 0.5
-        p_magnitude = 2
+        """
+        Tests the forced extension of a single DNA chain.
+        We do the following:
+        1. Create n 3-d bond vectors
+        2. These n vectors implies n+1 beads where bead_0 is at the origin. We then
+        pad the n+1 beads with a before and after bead so that the bond length is always 1.
+        The length=1 bond will exert no Hooke tension to bead_0 and bead_n_plus_1. The reason to have them is so that
+        we can treat all beads 0 to n+1 with the same math operation.
+        3. Apply the Euler approximation to get the next round of bead positions.
+        4. Caclulate the bond vectors based on the beads and we go back to 2.
+        :return:
+        """
+        steps = 50000
+        delta_t = 0.0001
+        n = 50
+        k = 500
+        p_magnitude = 50
 
         spring_switch = 1  # Turn on/off (1/0) the effect of the spring
         p_switch = 1  # Turn on/off (1/0) the effect of the force p
         bm_switch = 1  # Turn on/off (1/0) the effect of Brownian Motion
 
+        # starting from a straight line will take longer to reach equilibrium
+        # bond_vectors = generate_simple_3d_unit_vectors(n)
         bond_vectors = generate_3d_random_bm_vectors(n)
+
         p = np.zeros(3 * (n + 1)).reshape(3, -1)
         p[0, 0] = -p_magnitude
         p[0, n] = p_magnitude
@@ -74,7 +89,7 @@ class ThreeDimTestCase(unittest.TestCase):
                                    + p_switch * delta_t * p
                                    + bm_switch * np.sqrt(2 * delta_t) * n_plus_1_bm
                                    )
-            bond_vectors = np.diff(beads_0_to_n_plus_1)
+            bond_vectors = np.diff(beads_0_to_n_plus_1, axis=1)
 
         mpl.rcParams['legend.fontsize'] = 10
         fig = plt.figure()
