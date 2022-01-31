@@ -54,7 +54,8 @@ def calculate_f(v):
     :return:
     """
     try:
-        magnitude = np.sqrt(np.sum(v * v, axis=0))
+        magnitude = np.sqrt(np.sum(v * v, axis=-2))
+        magnitude = np.expand_dims(magnitude, axis=-2)
         return v - v / magnitude
     except:
         return np.zeros(v.shape)

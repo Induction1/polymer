@@ -1,9 +1,12 @@
 import unittest
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import rcParams
 from matplotlib.ticker import FuncFormatter
-from bm.brownian_motion import generate_random_3d_unit_vector, generate_random_3d_unit_vectors
+
+from bm.brownian_motion import generate_random_3d_unit_vector, generate_random_3d_unit_vectors, \
+    generate_random_3d_unit_vectors_of_n_chains
 
 
 class TestSimpleBM(unittest.TestCase):
@@ -126,3 +129,6 @@ class TestSimpleBM(unittest.TestCase):
     def test_random_3d_vector_array(self):
         vectors_3d = generate_random_3d_unit_vectors(4)
         print(vectors_3d.reshape(3, -1))
+
+    def test_random_3d_vector_array_of_n_chains(self):
+        print(generate_random_3d_unit_vectors_of_n_chains(2, 4))
