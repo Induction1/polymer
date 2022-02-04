@@ -49,6 +49,19 @@ class ThreeDimTestCase(unittest.TestCase):
         )
 
     def test_force_extension_of_dna(self):
+        result = [self.single_dna_chain_force_extension(steps=steps) for steps in [10_000, 100_000]]
+
+        mpl.rcParams['legend.fontsize'] = 10
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
+        # Using Python unpack syntax. Could also use cum_sum[0], cum_sum[1], cum_sum[2]
+        for beads_0_to_n_plus_1 in result:
+            ax.plot(*beads_0_to_n_plus_1, label='DNA chain')
+            ax.legend()
+            ax.scatter(*beads_0_to_n_plus_1)
+        plt.show()
+
+    def single_dna_chain_force_extension(self, steps=400_000, delta_t=1.0 / 100_000, n=50, k=500, p_magnitude=100):
         """
         Tests the forced extension of a single DNA chain.
         We do the following:
@@ -59,13 +72,13 @@ class ThreeDimTestCase(unittest.TestCase):
         we can treat all beads 0 to n+1 with the same math operation.
         3. Apply the Euler approximation to get the next round of bead positions.
         4. Caclulate the bond vectors based on the beads and we go back to 2.
+        :param steps:
+        :param delta_t:
+        :param n:
+        :param k:
+        :param p_magnitude:
         :return:
         """
-        steps = 500000
-        delta_t = 0.0005
-        n = 50
-        k = 500
-        p_magnitude = 200
 
         spring_switch = 1  # Turn on/off (1/0) the effect of the spring
         p_switch = 1  # Turn on/off (1/0) the effect of the force p
@@ -81,7 +94,7 @@ class ThreeDimTestCase(unittest.TestCase):
 
         for i in range(steps):
             n_plus_3_beads = from_bond_vectors_of_a_chain_to_padded_bead_vectors(bond_vectors)
-            n_plus_2_bonds = np.diff(n_plus_3_beads, axis=-1)
+            n_plus_2_bonds = np.diff(n_plus_3_beads, axis=1)
 
             n_plus_1_bm = generate_3d_random_bm_vectors(n + 1)
             beads_0_to_n_plus_1 = (n_plus_3_beads[:, 1:n + 2]
@@ -90,21 +103,14 @@ class ThreeDimTestCase(unittest.TestCase):
                                    + p_switch * delta_t * p
                                    + bm_switch * np.sqrt(2 * delta_t) * n_plus_1_bm
                                    )
-            bond_vectors = np.diff(beads_0_to_n_plus_1, axis=-1)
+            bond_vectors = np.diff(beads_0_to_n_plus_1, axis=1)
 
-        mpl.rcParams['legend.fontsize'] = 10
-        fig = plt.figure()
-        ax = fig.gca(projection='3d')
-        # Using Python unpack syntax. Could also use cum_sum[0], cum_sum[1], cum_sum[2]
-        ax.plot(*beads_0_to_n_plus_1, label='DNA chain')
-        ax.legend()
-        ax.scatter(*beads_0_to_n_plus_1)
-        plt.show()
+        return beads_0_to_n_plus_1
 
     def test_force_extension_of_dna_multi_chains(self):
         num_of_chains = 50
-        steps = 500000
-        delta_t = 0.0005
+        steps = 50000
+        delta_t = 0.0001
         n = 50
         k = 500
         p_magnitude = 200
