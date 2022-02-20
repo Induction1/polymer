@@ -46,6 +46,10 @@ def generate_random_3d_unit_vectors_of_n_chains(num_of_chains, num_of_vectors):
     return vectors_3d.reshape(num_of_chains, 3, -1)
 
 
+def vector_magnitude(v):
+    return np.sqrt(np.sum(v * v, axis=0))
+
+
 def calculate_f(v):
     """
     See definition in problem II.1

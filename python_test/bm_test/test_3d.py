@@ -6,7 +6,7 @@ import numpy as np
 
 from bm.brownian_motion import calculate_f, from_bond_vectors_of_a_chain_to_padded_bead_vectors, \
     generate_3d_random_bm_vectors, generate_random_3d_unit_vectors_of_n_chains, \
-    from_bond_vectors_of_n_chains_to_padded_bead_vectors
+    from_bond_vectors_of_n_chains_to_padded_bead_vectors, vector_magnitude
 
 
 class ThreeDimTestCase(unittest.TestCase):
@@ -49,7 +49,7 @@ class ThreeDimTestCase(unittest.TestCase):
         )
 
     def test_force_extension_of_dna(self):
-        result = [self.single_dna_chain_force_extension(steps=steps) for steps in [10_000, 100_000]]
+        result = [self.single_dna_chain_force_extension(steps=steps) for steps in [10_000, 1000_000, 5000_000]]
 
         mpl.rcParams['legend.fontsize'] = 10
         fig = plt.figure()
@@ -61,7 +61,7 @@ class ThreeDimTestCase(unittest.TestCase):
             ax.scatter(*beads_0_to_n_plus_1)
         plt.show()
 
-    def single_dna_chain_force_extension(self, steps=400_000, delta_t=1.0 / 100_000, n=50, k=500, p_magnitude=100):
+    def single_dna_chain_force_extension(self, steps=400_000, delta_t=1.0 / 500_000, n=50, k=500, p_magnitude=100):
         """
         Tests the forced extension of a single DNA chain.
         We do the following:
@@ -109,48 +109,63 @@ class ThreeDimTestCase(unittest.TestCase):
 
     def test_force_extension_of_dna_multi_chains(self):
         num_of_chains = 50
-        steps = 50000
+        steps = 500000
         delta_t = 0.0001
-        n = 50
-        k = 500
-        p_magnitude = 200
 
-        spring_switch = 1  # Turn on/off (1/0) the effect of the spring
-        p_switch = 1  # Turn on/off (1/0) the effect of the force p
-        bm_switch = 1  # Turn on/off (1/0) the effect of Brownian Motion
-        bm_factor = 1
+        k = 1000
+        n_array = [10, 20, 50, 100, 150, 200]
 
-        # starting from a straight line will take longer to reach equilibrium
-        bond_vectors = generate_random_3d_unit_vectors_of_n_chains(num_of_chains, n)
+        p_array = [0, 2, 5, 10, 20, 50, 100, 200, 500]
+        print('len,k,p,num_of_chains,steps,delta_t,time,chain_e2e_avg_distance')
 
-        p = np.zeros(3 * num_of_chains * (n + 1)).reshape(num_of_chains, 3, -1)
-        p[:, 0, 0] = -p_magnitude
-        p[:, 0, n] = p_magnitude
+        for p_magnitude in p_array:
+            for n in n_array:
+                spring_switch = 1  # Turn on/off (1/0) the effect of the spring
+                p_switch = 1  # Turn on/off (1/0) the effect of the force p
+                bm_switch = 1  # Turn on/off (1/0) the effect of Brownian Motion
+                bm_factor = 1  # Be able to adjust the magnitude of the random kicks
 
-        for i in range(steps):
-            n_plus_3_beads = from_bond_vectors_of_n_chains_to_padded_bead_vectors(bond_vectors)
-            # TODO the below line is too wasty. We should be able to pad bond_vectors directly.
-            n_plus_2_bonds = np.diff(n_plus_3_beads, axis=-1)
+                # starting from a straight line will take longer to reach equilibrium
+                bond_vectors = generate_random_3d_unit_vectors_of_n_chains(num_of_chains, n)
 
-            n_plus_1_bm = generate_random_3d_unit_vectors_of_n_chains(num_of_chains, n + 1)
-            beads_0_to_n_plus_1 = (n_plus_3_beads[:, :, 1:n + 2]
-                                   - spring_switch * delta_t * k * calculate_f(n_plus_2_bonds[:, :, :n + 1])
-                                   + spring_switch * delta_t * k * calculate_f(n_plus_2_bonds[:, :, 1:n + 2])
-                                   + p_switch * delta_t * p
-                                   + bm_switch * bm_factor * np.sqrt(2 * delta_t) * n_plus_1_bm
-                                   )
-            bond_vectors = np.diff(beads_0_to_n_plus_1, axis=-1)
+                p = np.zeros(3 * num_of_chains * (n + 1)).reshape(num_of_chains, 3, -1)
+                p[:, 0, 0] = -p_magnitude
+                p[:, 0, n] = p_magnitude
 
-        ensemble_chain = np.sum(beads_0_to_n_plus_1, axis=0) / num_of_chains
+                for i in range(steps):
+                    n_plus_3_beads = from_bond_vectors_of_n_chains_to_padded_bead_vectors(bond_vectors)
+                    # TODO the below line is too wasty. We should be able to pad bond_vectors directly.
+                    n_plus_2_bonds = np.diff(n_plus_3_beads, axis=-1)
 
-        mpl.rcParams['legend.fontsize'] = 10
-        fig = plt.figure()
-        ax = fig.gca(projection='3d')
-        # Using Python unpack syntax. Could also use array[0], array[1], array[2]
-        ax.plot(*ensemble_chain, label='DNA chain')
-        ax.plot(*beads_0_to_n_plus_1[0], label='DNA chain')
+                    n_plus_1_bm = generate_random_3d_unit_vectors_of_n_chains(num_of_chains, n + 1)
+                    beads_0_to_n_plus_1 = (n_plus_3_beads[:, :, 1:n + 2]
+                                           - spring_switch * delta_t * k * calculate_f(n_plus_2_bonds[:, :, :n + 1])
+                                           + spring_switch * delta_t * k * calculate_f(n_plus_2_bonds[:, :, 1:n + 2])
+                                           + p_switch * delta_t * p
+                                           + bm_switch * bm_factor * np.sqrt(2 * delta_t) * n_plus_1_bm
+                                           )
+                    bond_vectors = np.diff(beads_0_to_n_plus_1, axis=-1)
 
-        ax.legend()
-        ax.scatter(*ensemble_chain)
-        ax.scatter(*beads_0_to_n_plus_1[0])
-        plt.show()
+                ensemble_chain = np.sum(beads_0_to_n_plus_1, axis=0) / num_of_chains
+
+                bead_0 = ensemble_chain[:, 0]
+                bead_n = ensemble_chain[:, -1]
+
+
+                print(f'{n},{k},{p_magnitude},{num_of_chains},{steps},{delta_t},{steps * delta_t},{vector_magnitude(bead_n - bead_0)}')
+
+        # mpl.rcParams['legend.fontsize'] = 10
+        # fig = plt.figure()
+        # ax = fig.gca(projection='3d')
+        # # Using Python unpack syntax. Could also use array[0], array[1], array[2]
+        # ax.plot(*ensemble_chain, label='DNA chain')
+        # ax.plot(*beads_0_to_n_plus_1[0], label='DNA chain')
+        #
+        # ax.legend()
+        # ax.scatter(*ensemble_chain)
+        # ax.scatter(*beads_0_to_n_plus_1[0])
+        # plt.show()
+
+    def test_vector_magnitude(self):
+        v = np.array([3, 4])
+        print(vector_magnitude(v))
