@@ -28,7 +28,7 @@ class TestSimpleBM(unittest.TestCase):
 
         # Bt2 - Bt1 ~ Normal with mean 0 and variance t2-t1
 
-        dB = np.sqrt(dt) * np.random.normal(size=(steps - 1, dimensions))
+        dB = np.sqrt(2 * dt) * np.random.normal(size=(steps - 1, dimensions))
         B0 = np.zeros(shape=(1, dimensions))
         print(dB.shape)
         print(B0.shape)

@@ -71,7 +71,7 @@ class ThreeDimTestCase(unittest.TestCase):
         The length=1 bond will exert no Hooke tension to bead_0 and bead_n_plus_1. The reason to have them is so that
         we can treat all beads 0 to n+1 with the same math operation.
         3. Apply the Euler approximation to get the next round of bead positions.
-        4. Caclulate the bond vectors based on the beads and we go back to 2.
+        4. Calculate the bond vectors based on the beads and we go back to 2.
         :param steps:
         :param delta_t:
         :param n:
@@ -168,4 +168,4 @@ class ThreeDimTestCase(unittest.TestCase):
 
     def test_vector_magnitude(self):
         v = np.array([3, 4])
-        print(vector_magnitude(v))
+        self.assertEqual(5.0, vector_magnitude(v))

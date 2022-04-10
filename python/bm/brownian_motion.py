@@ -134,4 +134,4 @@ def generate_3d_random_bm_vectors(n):
 
 
 def generate_simple_3d_unit_vectors(n):
-    return np.concatenate((np.ones((1, n)), np.zeros((1, 2 * n))), axis=1).reshape((3, -1))
+    return np.concatenate((np.ones((n, 1)), np.zeros((n, 2))), axis=1)
