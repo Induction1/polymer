@@ -46,24 +46,26 @@ class TestSimpleBM(unittest.TestCase):
         print(B.shape)
 
         return times, B
-        # print(times.shape)
-        # print(B.shape)
-        # plt.plot(times, B)
-        # plt.show()
+        print(times.shape)
+        print(B.shape)
+        plt.plot(times, B)
+        plt.show()
 
     def test_msd(self):
         """
         Tests the mean square distance of a Brownian motion
+        MSD = 2Dt
+        In this case, D=1, and T=1 and the MSD is a line with a slope of 2.
         :return:
         """
-        d = 100
+        d = 10000
         times, B = self.get_bm_data(dimensions=d)
 
         msd = np.sum(B * B / d, axis=1)
 
-        return times, msd
-        # plt.plot(times, msd)
-        # plt.show()
+        # return times, msd
+        plt.plot(times, msd)
+        plt.show()
 
     def test_histogram(self):
         n = 1000
@@ -88,7 +90,7 @@ class TestSimpleBM(unittest.TestCase):
 
         plt.hist(cross_section, bins=100)
         plt.gca().yaxis.set_major_formatter(FuncFormatter(fmt))
-        # plt.show()
+        plt.show()
 
     def test_combine_plots(self):
         n = 1000

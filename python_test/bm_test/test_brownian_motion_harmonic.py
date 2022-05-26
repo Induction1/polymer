@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 class TestBMHarmonic(unittest.TestCase):
     """
-    Brownian Motion in a harmonic potential
+    Brownian Motion in a harmonic potential of a particle
     """
 
     def test_harmonic(self):

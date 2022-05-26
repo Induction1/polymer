@@ -3,10 +3,12 @@ import unittest
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+from tools import print_curr_time
 
 from bm.brownian_motion import calculate_f, from_bond_vectors_of_a_chain_to_padded_bead_vectors, \
     generate_3d_random_bm_vectors, generate_random_3d_unit_vectors_of_n_chains, \
     from_bond_vectors_of_n_chains_to_padded_bead_vectors, vector_magnitude
+from tools import print_curr_time
 
 
 class ThreeDimTestCase(unittest.TestCase):
@@ -49,6 +51,7 @@ class ThreeDimTestCase(unittest.TestCase):
         )
 
     def test_force_extension_of_dna(self):
+        # This takes about 10min to complete.
         result = [self.single_dna_chain_force_extension(steps=steps) for steps in [10_000, 1000_000, 5000_000]]
 
         mpl.rcParams['legend.fontsize'] = 10
@@ -106,6 +109,65 @@ class ThreeDimTestCase(unittest.TestCase):
             bond_vectors = np.diff(beads_0_to_n_plus_1, axis=1)
 
         return beads_0_to_n_plus_1
+
+    def test_force_extension_of_dna_multi_chains_dynamics(self):
+        """
+        Calculates the dynamics of force extension of dna. Persists the ensemble averaged e2e MSD in each step.
+        The result will be downsampled in a separate step so that the result can be visualized. See test_process_file.py
+        for downsampling.
+        """
+        f = open("data10.csv", "w")
+        print_curr_time()
+        num_of_chains = 100
+        steps = 500
+        delta_t = 0.00005
+
+        k = 1000
+        n_array = [50]
+
+        p_array = [100]
+        f.write('len,k,p,num_of_chains,steps,delta_t,time,chain_e2e_avg_distance,msd\n')
+
+        for p_magnitude in p_array:
+            for n in n_array:
+                spring_switch = 1  # Turn on/off (1/0) the effect of the spring
+                p_switch = 1  # Turn on/off (1/0) the effect of the force p
+                bm_switch = 1  # Turn on/off (1/0) the effect of Brownian Motion
+                bm_factor = 1  # Be able to adjust the magnitude of the random kicks
+
+                # starting from a straight line will take longer to reach equilibrium
+                bond_vectors = generate_random_3d_unit_vectors_of_n_chains(num_of_chains, n)
+
+                p = np.zeros(3 * num_of_chains * (n + 1)).reshape(num_of_chains, 3, -1)
+                p[:, 0, 0] = -p_magnitude
+                p[:, 0, n] = p_magnitude
+
+                for i in range(steps):
+                    n_plus_3_beads = from_bond_vectors_of_n_chains_to_padded_bead_vectors(bond_vectors)
+                    # TODO the below line is too wasty. We should be able to pad bond_vectors directly.
+                    n_plus_2_bonds = np.diff(n_plus_3_beads, axis=-1)
+
+                    n_plus_1_bm = generate_random_3d_unit_vectors_of_n_chains(num_of_chains, n + 1)
+                    beads_0_to_n_plus_1 = (n_plus_3_beads[:, :, 1:n + 2]
+                                           - spring_switch * delta_t * k * calculate_f(n_plus_2_bonds[:, :, :n + 1])
+                                           + spring_switch * delta_t * k * calculate_f(n_plus_2_bonds[:, :, 1:n + 2])
+                                           + p_switch * delta_t * p
+                                           + bm_switch * bm_factor * np.sqrt(2 * delta_t) * n_plus_1_bm
+                                           )
+                    bond_vectors = np.diff(beads_0_to_n_plus_1, axis=-1)
+
+                    ensemble_chain_of_the_step = np.sum(beads_0_to_n_plus_1, axis=0) / num_of_chains
+                    bead_0_of_the_step = ensemble_chain_of_the_step[:, 0]
+                    bead_n_of_the_step = ensemble_chain_of_the_step[:, -1]
+
+                    e2e_vectors = np.sum(bond_vectors, axis=-1)
+                    square_distance_of_chains = np.sum(e2e_vectors * e2e_vectors, axis=-1)
+                    msd = np.sum(square_distance_of_chains) / num_of_chains
+
+                    f.write(f'{n},{k},{p_magnitude},{num_of_chains},{steps},{delta_t},{i * delta_t},{vector_magnitude(bead_n_of_the_step - bead_0_of_the_step)},{msd}\n')
+
+        f.close()
+        print_curr_time()
 
     def test_force_extension_of_dna_multi_chains(self):
         num_of_chains = 50
