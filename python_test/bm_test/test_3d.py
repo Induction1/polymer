@@ -148,15 +148,15 @@ class ThreeDimTestCase(unittest.TestCase):
                     n_plus_2_bonds = np.diff(n_plus_3_beads, axis=-1)
 
                     n_plus_1_bm = generate_random_3d_unit_vectors_of_n_chains(num_of_chains, n + 1)
-                    beads_0_to_n_plus_1 = (n_plus_3_beads[:, :, 1:n + 2]
+                    beads_0_to_n = (n_plus_3_beads[:, :, 1:n + 2]
                                            - spring_switch * delta_t * k * calculate_f(n_plus_2_bonds[:, :, :n + 1])
                                            + spring_switch * delta_t * k * calculate_f(n_plus_2_bonds[:, :, 1:n + 2])
                                            + p_switch * delta_t * p
                                            + bm_switch * bm_factor * np.sqrt(2 * delta_t) * n_plus_1_bm
                                            )
-                    bond_vectors = np.diff(beads_0_to_n_plus_1, axis=-1)
+                    bond_vectors = np.diff(beads_0_to_n, axis=-1)
 
-                    ensemble_chain_of_the_step = np.sum(beads_0_to_n_plus_1, axis=0) / num_of_chains
+                    ensemble_chain_of_the_step = np.sum(beads_0_to_n, axis=0) / num_of_chains
                     bead_0_of_the_step = ensemble_chain_of_the_step[:, 0]
                     bead_n_of_the_step = ensemble_chain_of_the_step[:, -1]
 
@@ -200,15 +200,15 @@ class ThreeDimTestCase(unittest.TestCase):
                     n_plus_2_bonds = np.diff(n_plus_3_beads, axis=-1)
 
                     n_plus_1_bm = generate_random_3d_unit_vectors_of_n_chains(num_of_chains, n + 1)
-                    beads_0_to_n_plus_1 = (n_plus_3_beads[:, :, 1:n + 2]
+                    beads_0_to_n = (n_plus_3_beads[:, :, 1:n + 2]
                                            - spring_switch * delta_t * k * calculate_f(n_plus_2_bonds[:, :, :n + 1])
                                            + spring_switch * delta_t * k * calculate_f(n_plus_2_bonds[:, :, 1:n + 2])
                                            + p_switch * delta_t * p
                                            + bm_switch * bm_factor * np.sqrt(2 * delta_t) * n_plus_1_bm
                                            )
-                    bond_vectors = np.diff(beads_0_to_n_plus_1, axis=-1)
+                    bond_vectors = np.diff(beads_0_to_n, axis=-1)
 
-                ensemble_chain = np.sum(beads_0_to_n_plus_1, axis=0) / num_of_chains
+                ensemble_chain = np.sum(beads_0_to_n, axis=0) / num_of_chains
 
                 bead_0 = ensemble_chain[:, 0]
                 bead_n = ensemble_chain[:, -1]
@@ -221,11 +221,11 @@ class ThreeDimTestCase(unittest.TestCase):
         # ax = fig.gca(projection='3d')
         # # Using Python unpack syntax. Could also use array[0], array[1], array[2]
         # ax.plot(*ensemble_chain, label='DNA chain')
-        # ax.plot(*beads_0_to_n_plus_1[0], label='DNA chain')
+        # ax.plot(*beads_0_to_n[0], label='DNA chain')
         #
         # ax.legend()
         # ax.scatter(*ensemble_chain)
-        # ax.scatter(*beads_0_to_n_plus_1[0])
+        # ax.scatter(*beads_0_to_n[0])
         # plt.show()
 
     def test_vector_magnitude(self):
