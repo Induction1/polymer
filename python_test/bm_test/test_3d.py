@@ -116,7 +116,7 @@ class ThreeDimTestCase(unittest.TestCase):
         The result will be downsampled in a separate step so that the result can be visualized. See test_process_file.py
         for downsampling.
         """
-        f = open("data11.csv", "w")
+        f = open("data12.csv", "w")
         print_curr_time()
         num_of_chains = 500
         steps = 500000
@@ -124,6 +124,7 @@ class ThreeDimTestCase(unittest.TestCase):
 
         k = 1000
         n_array = [50]
+        tracking_monomers = [13]
 
         p_array = [100]
 
@@ -131,10 +132,10 @@ class ThreeDimTestCase(unittest.TestCase):
         # After each iteration, we move the bead_0 to the origin, so that
         per_chain_cum_origin_offset = np.zeros(3 * num_of_chains).reshape(num_of_chains, -1)
 
-        f.write('len,k,p,num_of_chains,steps,delta_t,time,chain_e2e_avg_distance,msd,chain_center_of_mass_msd\n')
+        f.write('len,k,p,num_of_chains,steps,delta_t,time,chain_e2e_avg_distance,msd,chain_center_of_mass_msd,tracking_monomer,tracking_monomer_msd\n')
 
         for p_magnitude in p_array:
-            for n in n_array:
+            for n, tracking_monomer in zip(n_array, tracking_monomers):
                 spring_switch = 1  # Turn on/off (1/0) the effect of the spring
                 p_switch = 1  # Turn on/off (1/0) the effect of the force p
                 bm_switch = 1  # Turn on/off (1/0) the effect of Brownian Motion
@@ -148,6 +149,7 @@ class ThreeDimTestCase(unittest.TestCase):
                 p[:, 0, n] = p_magnitude
 
                 per_chain_center_of_mass_origin = None
+                per_chain_tracking_monomer_origin = None
 
                 for i in range(steps):
                     n_plus_3_beads = from_bond_vectors_of_n_chains_to_padded_bead_vectors(bond_vectors)
@@ -162,11 +164,21 @@ class ThreeDimTestCase(unittest.TestCase):
                                            + bm_switch * bm_factor * np.sqrt(2 * delta_t) * n_plus_1_bm
                                            )
 
+                    beads_of_the_tracking_monomer = np.array(beads_0_to_n[:, :, tracking_monomer], copy=True) # this copy is important, otherwise, it will modify the beads data.
+                    beads_of_the_tracking_monomer += per_chain_cum_origin_offset
+                    if per_chain_tracking_monomer_origin is None:
+                        per_chain_tracking_monomer_origin = np.array(beads_of_the_tracking_monomer, copy=True)
+
+                    beads_of_the_tracking_monomer_displacement = beads_of_the_tracking_monomer - per_chain_tracking_monomer_origin
+                    ensemble_tracking_monomer_msd = np.sum(np.sum(beads_of_the_tracking_monomer_displacement * beads_of_the_tracking_monomer_displacement, axis=1), axis=0) / num_of_chains
+
+
                     # accumulate the bead_0 location to track how far it has moved
                     per_chain_center_of_mass = np.sum(beads_0_to_n, axis=2) / (n + 2)
 
                     # Add the previous offset to the center of masses to get the absolute displacement
                     per_chain_center_of_mass += per_chain_cum_origin_offset
+
                     if per_chain_center_of_mass_origin is None:
                         per_chain_center_of_mass_origin = np.array(per_chain_center_of_mass, copy=True)
 
@@ -187,7 +199,7 @@ class ThreeDimTestCase(unittest.TestCase):
                     square_distance_of_chains = np.sum(e2e_vectors * e2e_vectors, axis=-1)
                     msd = np.sum(square_distance_of_chains) / num_of_chains
 
-                    f.write(f'{n},{k},{p_magnitude},{num_of_chains},{steps},{delta_t},{i * delta_t},{vector_magnitude(bead_n_of_the_step - bead_0_of_the_step)},{msd},{ensemble_chain_center_of_mass_msd}\n')
+                    f.write(f'{n},{k},{p_magnitude},{num_of_chains},{steps},{delta_t},{i * delta_t},{vector_magnitude(bead_n_of_the_step - bead_0_of_the_step)},{msd},{ensemble_chain_center_of_mass_msd},{tracking_monomer},{ensemble_tracking_monomer_msd}\n')
 
         f.close()
         print_curr_time()
