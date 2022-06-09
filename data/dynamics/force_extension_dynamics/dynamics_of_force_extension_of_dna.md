@@ -26,16 +26,27 @@ noise and simulation time.
 - p: Pulling force
 - delta_t: The simulation step time interval
 
-| Experiment | n | k | p | delta_t | # of steps | # of chains | Data Directory |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 50 | 1000 | 100 | 5e-5 | 500000 | 100 | n_50_k_1000_p_100_delta_t_5e-5 |
-| 2 | 100 | 1000 | 100 | 5e-5 | 500000 | 100 | n_100_k_1000_p_100_delta_t_5e-5 |
-| 3 | 100 | 1000 | 200 | 5e-5 | 500000 | 100 | n_100_k_1000_p_200_delta_t_5e-5 |
+| Experiment | n | k | p | delta_t | # of steps | # of chains | Data Directory | Comment |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 50 | 1000 | 100 | 5e-5 | 500000 | 100 | n_50_k_1000_p_100_delta_t_5e-5 | |
+| 2 | 100 | 1000 | 100 | 5e-5 | 500000 | 100 | n_100_k_1000_p_100_delta_t_5e-5 | |
+| 3 | 100 | 1000 | 200 | 5e-5 | 500000 | 100 | n_100_k_1000_p_200_delta_t_5e-5 | |
+| 4 | 50 | 1000 | 100 | 5e-5 | 500000 | 500 | n_50_k_1000_p_100_delta_t_5e-5 | Center of Mass MSD and 0th, 13th and 25th monomer MSD |
+| 5 | 100 | 1000 | 100 | 5e-5 | 500000 | 500 | n_100_k_1000_p_100_delta_t_5e-5 | Center of Mass MSD and 0th, 25th and 50th monomer MSD |
 
 ## Experiment Results
 - The raw data and the down-sampled data are in data/dynamics/force_extension_dynamics directory
-- [Simulation Diagram](https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0MQw2Pa8abpHk2KiH6BZaIXhbKDfTusS5cA4SvKvIuDEg80QPQF26xqr-rOOgEevIqeUlIlV-2yPD/pubchart?oid=1729019559&format=interactive)
-
+- [Fig 1: Simulation Diagram](https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0MQw2Pa8abpHk2KiH6BZaIXhbKDfTusS5cA4SvKvIuDEg80QPQF26xqr-rOOgEevIqeUlIlV-2yPD/pubchart?oid=1729019559&format=interactive)
+- [Fig 2: COM and nth Monomer MSD without Pulling Force](https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0MQw2Pa8abpHk2KiH6BZaIXhbKDfTusS5cA4SvKvIuDEg80QPQF26xqr-rOOgEevIqeUlIlV-2yPD/pubchart?oid=156674255&format=interactive)
+    * Without pulling force, the COM (center-of-mass) MSD obeys diffuses with alpha=1
+    * Monomer MSD shows an alpha of 1 when time scale < 0.001 and an alpha of about 0.5 at time scale > 0.01.
+    * The power law of COM MSD and long term monomer MSD are consistent with literature.
+    * The 0th monomer has a slightly greater MDS than inner monomer.
+    * There is no noticeable MSD difference between the 25th and 50th monomer.
+- [Fig 3: COM and nth Monomer MSD](https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0MQw2Pa8abpHk2KiH6BZaIXhbKDfTusS5cA4SvKvIuDEg80QPQF26xqr-rOOgEevIqeUlIlV-2yPD/pubchart?oid=397119336&format=interactive)
+    * Compared with the no-pulling force result, when there is a pulling force in x-axis, it appears the chain starts extending from both ends of the chain and slowly propagate toward the center.
+    * The nth monomer MSD is essentially unperturbed until the extension propagated to the nth monomer. The closer the monomer to the center the later it is affected by the pulling effect.
+    * As the pulling forces are opposite in direction and equals in magnitude, the COM MSD is unaffected by the forces.
 ## Appendix
 ### Simulation Environment
 - OS: MacOS 11.2.3 (20D91)

@@ -116,15 +116,15 @@ class ThreeDimTestCase(unittest.TestCase):
         The result will be downsampled in a separate step so that the result can be visualized. See test_process_file.py
         for downsampling.
         """
-        f = open("data12.csv", "w")
+        f = open("data15.csv", "w")
         print_curr_time()
         num_of_chains = 500
         steps = 500000
         delta_t = 0.00005
 
         k = 1000
-        n_array = [50]
-        tracking_monomers = [13]
+        n_array = [100]
+        tracking_monomer_0, tracking_monomer_1, tracking_monomer_2 = [0, 25, 50]
 
         p_array = [100]
 
@@ -132,12 +132,12 @@ class ThreeDimTestCase(unittest.TestCase):
         # After each iteration, we move the bead_0 to the origin, so that
         per_chain_cum_origin_offset = np.zeros(3 * num_of_chains).reshape(num_of_chains, -1)
 
-        f.write('len,k,p,num_of_chains,steps,delta_t,time,chain_e2e_avg_distance,msd,chain_center_of_mass_msd,tracking_monomer,tracking_monomer_msd\n')
+        f.write('len,k,p,num_of_chains,steps,delta_t,time,chain_e2e_avg_distance,msd,chain_center_of_mass_msd,tracking_monomer_0,tracking_monomer_msd_0,tracking_monomer_1,tracking_monomer_msd_1,tracking_monomer_2,tracking_monomer_msd_2\n')
 
         for p_magnitude in p_array:
-            for n, tracking_monomer in zip(n_array, tracking_monomers):
+            for n in n_array:
                 spring_switch = 1  # Turn on/off (1/0) the effect of the spring
-                p_switch = 1  # Turn on/off (1/0) the effect of the force p
+                p_switch = 1 # Turn on/off (1/0) the effect of the force p
                 bm_switch = 1  # Turn on/off (1/0) the effect of Brownian Motion
                 bm_factor = 1  # Be able to adjust the magnitude of the random kicks
 
@@ -163,14 +163,14 @@ class ThreeDimTestCase(unittest.TestCase):
                                            + p_switch * delta_t * p
                                            + bm_switch * bm_factor * np.sqrt(2 * delta_t) * n_plus_1_bm
                                            )
-
-                    beads_of_the_tracking_monomer = np.array(beads_0_to_n[:, :, tracking_monomer], copy=True) # this copy is important, otherwise, it will modify the beads data.
-                    beads_of_the_tracking_monomer += per_chain_cum_origin_offset
+                    beads_of_the_tracking_monomer = np.array(np.take(beads_0_to_n, [tracking_monomer_0, tracking_monomer_1, tracking_monomer_2], axis=2), copy=True) # this copy is important, otherwise, it will modify the beads data.
+                    beads_of_the_tracking_monomer += np.expand_dims(per_chain_cum_origin_offset, axis=2)
                     if per_chain_tracking_monomer_origin is None:
                         per_chain_tracking_monomer_origin = np.array(beads_of_the_tracking_monomer, copy=True)
 
                     beads_of_the_tracking_monomer_displacement = beads_of_the_tracking_monomer - per_chain_tracking_monomer_origin
                     ensemble_tracking_monomer_msd = np.sum(np.sum(beads_of_the_tracking_monomer_displacement * beads_of_the_tracking_monomer_displacement, axis=1), axis=0) / num_of_chains
+
 
 
                     # accumulate the bead_0 location to track how far it has moved
@@ -199,7 +199,7 @@ class ThreeDimTestCase(unittest.TestCase):
                     square_distance_of_chains = np.sum(e2e_vectors * e2e_vectors, axis=-1)
                     msd = np.sum(square_distance_of_chains) / num_of_chains
 
-                    f.write(f'{n},{k},{p_magnitude},{num_of_chains},{steps},{delta_t},{i * delta_t},{vector_magnitude(bead_n_of_the_step - bead_0_of_the_step)},{msd},{ensemble_chain_center_of_mass_msd},{tracking_monomer},{ensemble_tracking_monomer_msd}\n')
+                    f.write(f'{n},{k},{p_magnitude},{num_of_chains},{steps},{delta_t},{i * delta_t},{vector_magnitude(bead_n_of_the_step - bead_0_of_the_step)},{msd},{ensemble_chain_center_of_mass_msd},{tracking_monomer_0},{ensemble_tracking_monomer_msd[0]},{tracking_monomer_1},{ensemble_tracking_monomer_msd[1]},{tracking_monomer_2},{ensemble_tracking_monomer_msd[2]}\n')
 
         f.close()
         print_curr_time()
