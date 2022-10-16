@@ -17,5 +17,4 @@ Key Words: Rouse Model, Brownian motion, polymer, mean square distance
 - [Papoulis Pillai: Probability Random Variables and Stochastic Processes-4th Edition](http://ce.sharif.edu/courses/97-98/1/ce181-1/resources/root/Text_Books_References/Papoulis_Pillai_Probability_RandomVariables_and_Stochastic_Processes-4th_Edition_2002.pdf)
 - [Papoulis Pillai Slides](https://www.mhhe.com/engcs/electrical/papoulis/)
 - [Brownian dynamics simulations of bead-rod and bead-spring chains: numerical algorithms and coarse-graining issues](http://www.polyhub.org/pub/Documentation/CoarseGrainedAndMultiscaleSimulation/bamin_09.pdf)
-- [Twisting and stretching single DNA molecules](https://www.sciencedirect.com/science/article/pii/S0079610700000183): This has coth
-- [Math details](https://www.wolframalpha.com/input/?i=derivative+of+y%3Dln%281%2Fx+*+sinh%28x%29%29)
+- [Twisting and stretching single DNA molecules](https://www.sciencedirect.com/science/article/pii/S0079610700000183): This has [coth](https://www.wolframalpha.com/input/?i=derivative+of+y%3Dln%281%2Fx+*+sinh%28x%29%29)
