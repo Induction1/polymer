@@ -8,7 +8,10 @@ Key Words: Rouse Model, Brownian motion, polymer, mean square distance
 [Experiment Report](data/dynamics/force_extension_dynamics/dynamics_of_force_extension_of_dna.md)<br> 
 [Highlight Graph of the Nth Momomer MSD wrt the Center of the Chain](https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0MQw2Pa8abpHk2KiH6BZaIXhbKDfTusS5cA4SvKvIuDEg80QPQF26xqr-rOOgEevIqeUlIlV-2yPD/pubchart?oid=397119336&format=interactive)
 
-## [Simple Brownian Motion Ensemble MSD](resources/simple_brownian_motion_simulation.png)
+## Screenshots
+[Chain Forced Extension](resources/PolymerChainsForceExtension.png)
+[Simple Brownian Motion Ensemble MSD](resources/simple_brownian_motion_simulation.png)
+[Brownian Motion in Harmonic Field](resources/BrownianMotionInHarmonicField.png)
 
 ## Reading List
 - [Soft Matter Physics, Doi](https://kupdf.net/download/cgxnqsoftmatterphysics_59b0bb83dc0d609e1e568edb_pdf)
